@@ -127,10 +127,10 @@ public class fighterScript : MonoBehaviour {
 		startPosition = transform.position;
 		patrolPosition += startPosition;
 		floorLevel = - 10000;
-		sr = GetComponent<SpriteRenderer> ();
+		//sr = GetComponent<SpriteRenderer> ();
 		grounded = true;
-		defaultMaterial = sr.material;
-		sr.sortingOrder = - Mathf.FloorToInt (transform.position.y);
+		//defaultMaterial = sr.material;
+		//sr.sortingOrder = - Mathf.FloorToInt (transform.position.y);
 		center = GetComponent<BoxCollider2D> ().offset;
 		ammunition = new List<GameObject>();
 		gpm = GameObject.FindGameObjectWithTag ("gamePlayManager").GetComponent<GamePlayManager>();
@@ -535,13 +535,13 @@ public class fighterScript : MonoBehaviour {
 
 	void setHittedMaterial () // sets hitted material
 	{
-		sr.material = hittedMaterial; // sets hitted material
+		//sr.material = hittedMaterial; // sets hitted material
 		Invoke ("removeHittedMaterial", hitTime - 0.05f); // invokes changing hitted material
 	}
 
 	void removeHittedMaterial () // remove hitted material
 	{
-		sr.material = defaultMaterial;
+		//sr.material = defaultMaterial;
 	}
 
 	public void use(GameObject usableObject) // use usable object
@@ -577,7 +577,7 @@ public class fighterScript : MonoBehaviour {
 	{
 		if (Mathf.Abs (rb.velocity.y) > 0 && grounded) // if fighter moves vertical
 		{
-			sr.sortingOrder = - Mathf.FloorToInt (transform.position.y); // change sorting layer
+			//sr.sortingOrder = - Mathf.FloorToInt (transform.position.y); // change sorting layer
 		}
 	}
 
