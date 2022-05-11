@@ -19,6 +19,8 @@ public class CommanderRobotGameController : MonoBehaviour
     private void PrepareGame()
     {
         inputManager.selectPlayer(player.gameObject);
+        player.isMainCharacter = true;
+        player.underControl = true;
 
         PrepareLayers();
 

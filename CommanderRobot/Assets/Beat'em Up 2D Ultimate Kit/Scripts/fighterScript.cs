@@ -2,9 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using TMPro;
 
 public class fighterScript : MonoBehaviour {
 
+	[SerializeField] private TextMeshProUGUI debugText;
+	
 	[Space(20)]
 	[Header("Fighter settings")]
 
@@ -85,7 +88,7 @@ public class fighterScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		
 	}
 
 	void Awake () 
@@ -127,7 +130,7 @@ public class fighterScript : MonoBehaviour {
 		startPosition = transform.position;
 		patrolPosition += startPosition;
 		floorLevel = - 10000;
-		//sr = GetComponent<SpriteRenderer> ();
+		sr = GetComponent<SpriteRenderer> ();
 		grounded = true;
 		//defaultMaterial = sr.material;
 		//sr.sortingOrder = - Mathf.FloorToInt (transform.position.y);
@@ -149,8 +152,8 @@ public class fighterScript : MonoBehaviour {
 				} else { // if fighter is moving
 					if (!invoked) { // checks if invoke is not called yet
 						an.SetInteger ("movingState", 1);
-						Invoke ("run", timeBeforeRun); // invokes run animation
-						invoked = true;
+						//Invoke ("run", timeBeforeRun); // invokes run animation
+						//invoked = true;
 					}
 				}
 			} 
@@ -589,5 +592,13 @@ public class fighterScript : MonoBehaviour {
 		isBlocking = false;
 		demobilized = false;
 	}
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("PhaseTrigger"))
+        {
+			debugText.text = collision.gameObject.name;
+        }
+    }
 }
 
