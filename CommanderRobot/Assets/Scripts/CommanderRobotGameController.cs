@@ -41,6 +41,18 @@ public class CommanderRobotGameController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(10, 10);
     }
 
+    public void ApplyDeath(GameObject dead)
+    {
+        if (dead.GetComponent<fighterScript>().isMainCharacter)
+        {
+            // go to fail screen
+        }
+        else if (dead.layer == 9)
+        {
+            // adjust the amount of killed enemies, if needed!
+        }
+    }
+
     // win screen actions
 
     // fail screen actions

@@ -82,7 +82,7 @@ public class fighterScript : MonoBehaviour {
 	float shootPower; // forces, which applies to a bullet in case of shooting
 
 	GameObject healthBar; // stores UI element, that shows health
-	GamePlayManager gpm; // stores game play manager script
+	CommanderRobotGameController gpm; // stores game play manager script
 
 	[HideInInspector] public bool isMainCharacter;
 
@@ -136,7 +136,7 @@ public class fighterScript : MonoBehaviour {
 		//sr.sortingOrder = - Mathf.FloorToInt (transform.position.y);
 		center = GetComponent<BoxCollider2D> ().offset;
 		ammunition = new List<GameObject>();
-		gpm = GameObject.FindGameObjectWithTag ("gamePlayManager").GetComponent<GamePlayManager>();
+		gpm = GameObject.FindGameObjectWithTag ("gamePlayManager").GetComponent<CommanderRobotGameController>();
 	}
 
 	public void move (float x, float y) // move function
@@ -412,6 +412,11 @@ public class fighterScript : MonoBehaviour {
 			}
 		}
 
+        else
+        {
+			Debug.Log("No enemies detected on range.");
+        }
+
 		StartCoroutine ("getDemobilized", hitTime); // demobilizes for a time of a punch
 	}
 
@@ -521,7 +526,7 @@ public class fighterScript : MonoBehaviour {
 		demobilized = true;
 		an.SetBool ("dead", true);
 		dead = true;
-		if (gameObject.layer == 8 && gpm.pc.Contains(gameObject)) 
+		/*if (gameObject.layer == 8 && gpm.pc.Contains(gameObject)) 
 		{
 			gpm.pc.Remove(gameObject);
 			if (gpm.pc.Count == 0) // checks if it is the last playable fighter
@@ -531,8 +536,8 @@ public class fighterScript : MonoBehaviour {
 			{
 				gpm.changePlayer();
 			}
-		}
-		gpm.applyDeath (gameObject);
+		}*/
+		gpm.ApplyDeath (gameObject);
 		gameObject.layer = 12; // sets "dead" layer
 	}
 

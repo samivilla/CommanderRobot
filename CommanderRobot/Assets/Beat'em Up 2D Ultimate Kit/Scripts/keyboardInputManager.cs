@@ -38,22 +38,22 @@ public class keyboardInputManager : MonoBehaviour {
 		{
 			fighter.move(rb.velocity.x / speed , 0);
 		}
-		if (Input.GetKeyDown (KeyCode.Space))
+		/*if (Input.GetKeyDown (KeyCode.Space))
 		{
 			fighter.jump ();
-		}
+		}*/
 		if (Input.GetKeyDown (KeyCode.E))
 		{
 			fighter.attack ();
 		}
-		if (Input.GetKeyDown (KeyCode.Q))
+		/*if (Input.GetKeyDown (KeyCode.Q))
 		{
 			fighter.checkForUsableObjects ();
-		}
-		if (Input.GetKeyDown (KeyCode.F))
+		}*/
+		/*if (Input.GetKeyDown (KeyCode.F))
 		{
 			fighter.StartCoroutine ("block");
-		}
+		}*/
 	}
 
 	public void selectPlayer(GameObject newPlayer) 
