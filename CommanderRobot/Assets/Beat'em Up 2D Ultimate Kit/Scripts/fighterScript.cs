@@ -104,9 +104,11 @@ public class fighterScript : MonoBehaviour {
 			checkForEnemy (); // looks for enemy
 			if (target != null) // checks if enemy is around
 			{
+				Debug.Log("Looking for enemy.");
 				goToEnemy(); // goes to enemy
 			} else if (gameObject.layer == 8 && !underControl) // checks if it is ally
 			{
+				Debug.Log("Looking for friend.");
 				checkForFriend (); // looks for friend
 				if (friend != null) // checks if friend is around
 				{
@@ -132,8 +134,8 @@ public class fighterScript : MonoBehaviour {
 		floorLevel = - 10000;
 		sr = GetComponent<SpriteRenderer> ();
 		grounded = true;
-		//defaultMaterial = sr.material;
-		//sr.sortingOrder = - Mathf.FloorToInt (transform.position.y);
+		defaultMaterial = sr.material;
+		sr.sortingOrder = - Mathf.FloorToInt (transform.position.y);
 		center = GetComponent<BoxCollider2D> ().offset;
 		ammunition = new List<GameObject>();
 		gpm = GameObject.FindGameObjectWithTag ("gamePlayManager").GetComponent<CommanderRobotGameController>();
@@ -203,6 +205,9 @@ public class fighterScript : MonoBehaviour {
 				}
 			}
 			target = closestEnemy.gameObject; // definies target to attack
+
+			Debug.Log("Target defined!");
+
 			if (Vector3.Distance(closestEnemy.transform.position + new Vector3(closestEnemy.GetComponent<fighterScript> ().enemyOffset.x * 1, closestEnemy.GetComponent<fighterScript> ().enemyOffset.y, 0), transform.position) > Vector3.Distance(closestEnemy.transform.position + new Vector3(closestEnemy.GetComponent<fighterScript> ().enemyOffset.x * -1, closestEnemy.GetComponent<fighterScript> ().enemyOffset.y, 0), transform.position)) // defines which enemy's side to go
 			{
 				targetPosition = closestEnemy.transform.position + new Vector3(closestEnemy.GetComponent<fighterScript> ().enemyOffset.x * -1, closestEnemy.GetComponent<fighterScript> ().enemyOffset.y, 0);
@@ -223,24 +228,40 @@ public class fighterScript : MonoBehaviour {
 			if (ammunition.Count > 0) { // checks if fighter has weapon
 				if (!nearEnemy && Mathf.Abs(targetPosition.y - transform.position.y) < 0.5f && Mathf.Abs(targetPosition.x - transform.position.x) <= shootDistance) { // checks if 
 					nearEnemy = true;
+					
 					if (targetPosition.x > transform.position.x) { // checks if enemy is right from fighter
 						transform.rotation = Quaternion.Euler (transform.rotation.x, 0, transform.rotation.z);
 						k = 1;
-					} else { // checks if enemy is left from fighter
+					}
+					
+					else { // checks if enemy is left from fighter
 						transform.rotation = Quaternion.Euler (transform.rotation.x, -180, transform.rotation.z);
 						k = -1;
 					}
-					shoot (); // shoot
-				} else { // checks if enemy far
+					hit (); // shoot
+
+					Debug.Log("Enemy is trying to hit!");
+
+				} 
+				
+				else 
+				{ // checks if enemy far
 					move (0, direction.normalized.y.CompareTo(0)); // move vertically
 					nearEnemy = false;
+					Debug.Log("Enemy is too far.");
 				}
-			} else {
+			} 
+			
+			else {
 				move (direction.normalized.x, direction.normalized.y); // move to enemy
 				nearEnemy = false; 
 				CancelInvoke ("attackEnemy");
+
+				Debug.Log("Enemy has stopped attacking!");
 			}
-		} else if (!nearEnemy) { // checks if enemy is near
+		}
+		
+		else if (!nearEnemy) { // checks if enemy is near
 			nearEnemy = true;
 			stop (); // stops fighter
 			idle (); // sets idle animation
@@ -252,6 +273,8 @@ public class fighterScript : MonoBehaviour {
 				transform.rotation = Quaternion.Euler (transform.rotation.x, -180, transform.rotation.z);
 			}
 			Invoke ("attackEnemy", Random.Range (minTimeBeforeAttack,maxTimeBeforeAttack)); // Invokes attack
+
+			Debug.Log("Enemy has attacked!");
 		}
 	}
 
@@ -600,7 +623,7 @@ public class fighterScript : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("PhaseTrigger"))
+        if (collision.CompareTag("PhaseTrigger") && isMainCharacter)
         {
 			debugText.text = collision.gameObject.name;
         }
