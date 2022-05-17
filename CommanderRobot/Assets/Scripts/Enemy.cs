@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField] private float health;
+    
     [Header("Enemy Detection")]
     [SerializeField] private float enemyDetectionRadius;
     [SerializeField] private LayerMask enemyMask;
@@ -129,5 +131,20 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(attackResetTime);
 
         onAttackReset = false;
+    }
+
+    public void GetHit(float damage)
+    {
+        health -= damage;
+
+        if(health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+
     }
 }

@@ -432,6 +432,11 @@ public class fighterScript : MonoBehaviour {
 				{
 					au.PlayOneShot (sounds[0]);
 				}
+
+				if (isMainCharacter)
+				{
+					//enemies[i].gameObject.GetComponent<Enemy>().GetHit();
+				}
 			}
 		}
 
