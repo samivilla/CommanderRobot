@@ -33,6 +33,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Vector3 direction;
     [SerializeField] private GameObject target;
     [SerializeField] private float hitDuration;
+    [SerializeField] private float attackDuration;
 
     private Animator animator;
 
@@ -85,6 +86,7 @@ public class Enemy : MonoBehaviour
         {
             target = null;
             canAttack = false;
+            animator.SetInteger("movingState", 0);
         }
     }
 
@@ -140,15 +142,36 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator Attack()
     {
+        if(target.transform.position.x > transform.position.x)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+
         target.GetComponent<fighterScript>().TakeDamage(damage);
+        animator.SetInteger("movingState", 4);
         animator.SetInteger("fightState", 1);
 
         canAttack = false;
         onAttackReset = true;
 
+        StartCoroutine(AttackReset());
+
         yield return new WaitForSeconds(attackResetTime);
 
         onAttackReset = false;
+    }
+
+    private IEnumerator AttackReset()
+    {
+        yield return new WaitForSeconds(attackDuration);
+
+        animator.SetInteger("movingState", 0);
+        animator.SetInteger("fightState", 0);
     }
 
     public void GetHit(float damage)
@@ -183,6 +206,8 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         isDead = true;
+
+        transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 
         // animation
 

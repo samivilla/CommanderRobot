@@ -417,8 +417,8 @@ public class fighterScript : MonoBehaviour {
 	void hit () // punch
 	{
 		an.SetInteger ("movingState", 4); // sets the transition animation state
-		int randomHit = Random.Range (0, numberOfHits); // selects random hit animation
-		an.SetInteger ("fightState", randomHit); // enables proper hit animation
+		//int randomHit = Random.Range (0, numberOfHits); // selects random hit animation
+		an.SetInteger ("fightState", 1); // enables proper hit animation
 
 		Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, enemyDetectionRadius, enemyLayer);
 		//RaycastHit2D[] enemies = Physics2D.RaycastAll(transform.position + center + new Vector3 (hitRaycastOffset.x * k, hitRaycastOffset.y, 0), Vector2.up, hitRaycastLenght, enemyLayer); // checks for a receiver of a punch

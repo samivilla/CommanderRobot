@@ -8,12 +8,18 @@ public class CommanderRobotGameController : MonoBehaviour
     private keyboardInputManager inputManager;
     private AudioSource audioSource;
 
+    [SerializeField] private GameObject introText;
+
     private void Start()
     {
         inputManager = GameObject.FindGameObjectWithTag("inputManager").GetComponent<keyboardInputManager>();
         audioSource = GetComponent<AudioSource>();
 
         PrepareGame();
+
+        StartCoroutine(IntroTextFade());
+
+        ShowPlayerCharacter();
     }
 
     private void PrepareGame()
@@ -39,6 +45,19 @@ public class CommanderRobotGameController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(15, 13);
         Physics2D.IgnoreLayerCollision(0, 13);
         Physics2D.IgnoreLayerCollision(10, 10);
+    }
+
+    private void ShowPlayerCharacter()
+    {
+        // instantiate character here
+
+    }
+
+    private IEnumerator IntroTextFade()
+    {
+        yield return new WaitForSeconds(3f);
+
+        introText.SetActive(false);
     }
 
     public void ApplyDeath(GameObject dead)
