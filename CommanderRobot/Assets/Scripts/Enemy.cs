@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("General")]
     [SerializeField] private float health;
+    [SerializeField] private float damage;
     
     [Header("Enemy Detection")]
     [SerializeField] private float enemyDetectionRadius;
@@ -45,7 +47,6 @@ public class Enemy : MonoBehaviour
             if (!isPatroling && !isProtecting)
             {
                 StartCoroutine(Patrol());
-                Debug.Log("started patroling");
             }
         }
 
@@ -100,7 +101,6 @@ public class Enemy : MonoBehaviour
 
         while (!isProtecting && target == null)
         {
-            Debug.Log("patroling");
             transform.position = Vector3.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
 
             if (transform.position == direction)
@@ -124,7 +124,9 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator Attack()
     {
-        Debug.Log("Attacking towards player!");
+        target.GetComponent<fighterScript>().TakeDamage(damage);
+        animator.SetInteger("fightState", 1);
+
         canAttack = false;
         onAttackReset = true;
 
@@ -135,16 +137,34 @@ public class Enemy : MonoBehaviour
 
     public void GetHit(float damage)
     {
+        Debug.Log("Enemy takes damage!");
+
         health -= damage;
 
         if(health <= 0)
         {
             Die();
         }
+
+        else
+        {
+            animator.SetInteger("getAttackedState", 1);
+
+            // trigger reset
+        }
+    }
+
+    private IEnumerator HitReset()
+    {
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+
+        // reset animations
     }
 
     private void Die()
     {
+        // animation
 
+        GetComponent<Collider2D>().enabled = false;
     }
 }

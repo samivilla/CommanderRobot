@@ -6,8 +6,10 @@ using TMPro;
 
 public class fighterScript : MonoBehaviour {
 
+	[Header("Added for ComRobot")]
 	[SerializeField] private TextMeshProUGUI debugText;
-	
+	[SerializeField] private float enemyDetectionRadius;
+
 	[Space(20)]
 	[Header("Fighter settings")]
 
@@ -418,12 +420,13 @@ public class fighterScript : MonoBehaviour {
 		int randomHit = Random.Range (0, numberOfHits); // selects random hit animation
 		an.SetInteger ("fightState", randomHit); // enables proper hit animation
 
-		RaycastHit2D[] enemies = Physics2D.RaycastAll(transform.position + center + new Vector3 (hitRaycastOffset.x * k, hitRaycastOffset.y, 0), Vector2.up, hitRaycastLenght, enemyLayer); // checks for a receiver of a punch
+		Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, enemyDetectionRadius, enemyLayer);
+		//RaycastHit2D[] enemies = Physics2D.RaycastAll(transform.position + center + new Vector3 (hitRaycastOffset.x * k, hitRaycastOffset.y, 0), Vector2.up, hitRaycastLenght, enemyLayer); // checks for a receiver of a punch
 		if (enemies.Length > 0) // if there are receivers of a punch
 		{
 			for (int i = 0; i < enemies.Length; i++) 
 			{
-				bool superPunch = chanceOfSuperPunch > Random.Range(0, 100) ? true:false; // randomly decides if make super punch
+				/*bool superPunch = chanceOfSuperPunch > Random.Range(0, 100) ? true:false; // randomly decides if make super punch
 				enemies[i].transform.gameObject.GetComponent<fighterScript>().getAttacked(true, damage, superPunch, k, hitDirection); // sends attack information to a receiver
 				if (superPunch) 
 				{
@@ -431,11 +434,12 @@ public class fighterScript : MonoBehaviour {
 				} else 
 				{
 					au.PlayOneShot (sounds[0]);
-				}
+				}*/
 
 				if (isMainCharacter)
 				{
-					//enemies[i].gameObject.GetComponent<Enemy>().GetHit();
+					enemies[i].GetComponent<Enemy>().GetHit(damage);
+					au.PlayOneShot(sounds[0]);
 				}
 			}
 		}
@@ -493,6 +497,17 @@ public class fighterScript : MonoBehaviour {
 		}
 	}
 
+	public void TakeDamage(float damage)
+    {
+		Debug.Log("Player takes damage!");
+
+		rb.velocity = Vector2.zero; // stops fighter
+		changeAnimatorState("getAttackedState", 1);
+		StartCoroutine("getDemobilized", hitTime); // get demobilized
+
+		applyHealth(-damage);
+	}
+
 	void getHitted (float damage, bool superPunch, int s, Vector2 hitPower) // get hitted 
 	{
 		rb.velocity = Vector2.zero; // stops fighter 
@@ -540,7 +555,7 @@ public class fighterScript : MonoBehaviour {
 		}
 		if (underControl) // if player controls this fighter
 		{
-			refreshHealthBar(); // refresh health in health bar UI element
+			//refreshHealthBar(); // refresh health in health bar UI element
 		}
 	}
 
