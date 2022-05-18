@@ -24,12 +24,15 @@ public class Enemy : MonoBehaviour
     [Header("Enemy States")]
     [SerializeField] private bool isPatroling;
     [SerializeField] private bool isProtecting;
+    [SerializeField] private bool isHit;
+    [SerializeField] private bool isDead;
     [SerializeField] private bool canAttack;
     [SerializeField] private bool onAttackReset;
 
     [Header("Debugging")]
     [SerializeField] private Vector3 direction;
     [SerializeField] private GameObject target;
+    [SerializeField] private float hitDuration;
 
     private Animator animator;
 
@@ -40,21 +43,24 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        CheckForTarget();
-        
-        if(target == null)
+        if (!isHit && !isDead)
         {
-            if (!isPatroling && !isProtecting)
-            {
-                StartCoroutine(Patrol());
-            }
-        }
+            CheckForTarget();
 
-        else
-        {
-            if (canAttack && !onAttackReset)
+            if (target == null)
             {
-                StartCoroutine(Attack());
+                if (!isPatroling && !isProtecting)
+                {
+                    StartCoroutine(Patrol());
+                }
+            }
+
+            else
+            {
+                if (canAttack && !onAttackReset)
+                {
+                    StartCoroutine(Attack());
+                }
             }
         }
     }
@@ -84,22 +90,32 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator Patrol()
     {
-        direction = new Vector3(transform.position.x + Random.Range(-patrolingDistance, patrolingDistance), transform.position.y + Random.Range(-patrolingDistance, patrolingDistance));
+        direction = new Vector3(transform.position.x + Random.Range(-patrolingDistance, patrolingDistance), transform.position.y + Random.Range(-patrolingDistance, patrolingDistance), 0f);
 
-        if(direction.y > 23f)
+        if(direction.y > 6.4f)
         {
-            direction = new Vector3(direction.x, 23f);
+            direction = new Vector3(direction.x, 6.4f, 0f);
         }
 
-        else if(direction.y < -7.7f)
+        else if(direction.y < -22f)
         {
-            direction = new Vector3(direction.x, -7.7f);
+            direction = new Vector3(direction.x, -22f, 0f);
+        }
+
+        if(direction.x > transform.position.x)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
         isPatroling = true;
         animator.SetInteger("movingState", 1);
 
-        while (!isProtecting && target == null)
+        while (!isProtecting && target == null && !isHit)
         {
             transform.position = Vector3.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
 
@@ -149,20 +165,25 @@ public class Enemy : MonoBehaviour
         else
         {
             animator.SetInteger("getAttackedState", 1);
-
-            // trigger reset
+            StartCoroutine(HitReset());
         }
     }
 
     private IEnumerator HitReset()
     {
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        canAttack = false;
+        isHit = true;
 
-        // reset animations
+        yield return new WaitForSeconds(hitDuration);
+
+        animator.SetInteger("getAttackedState", 0);
+        isHit = false;
     }
 
     private void Die()
     {
+        isDead = true;
+
         // animation
 
         GetComponent<Collider2D>().enabled = false;
