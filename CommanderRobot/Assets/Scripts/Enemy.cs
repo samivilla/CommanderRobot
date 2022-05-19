@@ -34,8 +34,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private GameObject target;
     [SerializeField] private float hitDuration;
     [SerializeField] private float attackDuration;
-
-    private Animator animator;
+    [SerializeField] private Animator animator;
 
     private void Awake()
     {
@@ -92,16 +91,16 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator Patrol()
     {
-        direction = new Vector3(transform.position.x + Random.Range(-patrolingDistance, patrolingDistance), transform.position.y + Random.Range(-patrolingDistance, patrolingDistance), 0f);
+        direction = new Vector3(transform.position.x + Random.Range(-patrolingDistance, patrolingDistance), transform.position.y + Random.Range(-patrolingDistance, patrolingDistance));
 
         if(direction.y > 6.4f)
         {
-            direction = new Vector3(direction.x, 6.4f, 0f);
+            direction = new Vector3(direction.x, 6.4f);
         }
 
         else if(direction.y < -22f)
         {
-            direction = new Vector3(direction.x, -22f, 0f);
+            direction = new Vector3(direction.x, -22f);
         }
 
         if(direction.x > transform.position.x)
@@ -206,10 +205,14 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         isDead = true;
+        canAttack = false;
+        isPatroling = false;
+        isProtecting = false;
+        isHit = false;
 
-        transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 
-        // animation
+        animator.SetBool("dead", true);
 
         GetComponent<Collider2D>().enabled = false;
     }
