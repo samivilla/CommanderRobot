@@ -15,7 +15,7 @@ public class cameraBehaviour : MonoBehaviour {
 		if (width != 0) // This condition is delivered to prevent setting camera's size to zero when width is not set
 		{
 			// camera's orthographic size (height) * camera's aspect == camera's width  
-			Camera.main.orthographicSize = width / Camera.main.aspect; 
+			//Camera.main.orthographicSize = width / Camera.main.aspect; 
 			resizeCameraPhysics (); // sets box collider sizes to camera's sizes
 		}
 		rb = GetComponent<Rigidbody2D> (); // determinies rigidbody
