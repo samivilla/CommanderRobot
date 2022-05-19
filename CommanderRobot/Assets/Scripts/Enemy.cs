@@ -35,22 +35,25 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float hitDuration;
     [SerializeField] private float attackDuration;
     [SerializeField] private Animator animator;
+    //[SerializeField] private Rigidbody2D rb;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        //rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
         if (!isHit && !isDead)
         {
-            CheckForTarget();
+            //CheckForTarget();
 
             if (target == null)
             {
                 if (!isPatroling && !isProtecting)
                 {
+                    Debug.Log("start patroling");
                     StartCoroutine(Patrol());
                 }
             }
@@ -114,13 +117,16 @@ public class Enemy : MonoBehaviour
         }
 
         isPatroling = true;
-        //animator.SetInteger("movingState", 1);
+        animator.SetInteger("movingState", 1);
 
         while (!isProtecting && target == null && !isHit)
         {
             transform.position = Vector2.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
 
-            if (transform.position == direction)
+            Debug.Log("move");
+            //rb.velocity = direction * moveSpeed;
+
+            if (Vector2.Distance(transform.position, direction) < 2f)
             {
                 StartCoroutine(ProtectPosition());
             }
@@ -133,8 +139,9 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator ProtectPosition()
     {
+        Debug.Log("protecting");
         isProtecting = true;
-        //animator.SetInteger("movingState", 0);
+        animator.SetInteger("movingState", 0);
         yield return new WaitForSeconds(protectingTime + Random.Range(-0.5f, 0.5f));
         isProtecting = false;
     }
@@ -152,8 +159,8 @@ public class Enemy : MonoBehaviour
         }
 
         target.GetComponent<fighterScript>().TakeDamage(damage);
-        //animator.SetInteger("movingState", 4);
-        //animator.SetInteger("fightState", 1);
+        animator.SetInteger("movingState", 4);
+        animator.SetInteger("fightState", 1);
 
         canAttack = false;
         onAttackReset = true;
@@ -169,8 +176,8 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(attackDuration);
 
-        //animator.SetInteger("movingState", 0);
-        //animator.SetInteger("fightState", 0);
+        animator.SetInteger("movingState", 0);
+        animator.SetInteger("fightState", 0);
     }
 
     public void GetHit(float damage)
@@ -186,7 +193,7 @@ public class Enemy : MonoBehaviour
 
         else
         {
-            //animator.SetInteger("getAttackedState", 1);
+            animator.SetInteger("getAttackedState", 1);
             StartCoroutine(HitReset());
         }
     }
@@ -198,7 +205,7 @@ public class Enemy : MonoBehaviour
 
         yield return new WaitForSeconds(hitDuration);
 
-        //animator.SetInteger("getAttackedState", 0);
+        animator.SetInteger("getAttackedState", 0);
         isHit = false;
     }
 
@@ -212,7 +219,7 @@ public class Enemy : MonoBehaviour
 
         //transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 
-        //animator.SetBool("dead", true);
+        animator.SetBool("dead", true);
 
         GetComponent<Collider2D>().enabled = false;
     }
