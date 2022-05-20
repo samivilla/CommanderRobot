@@ -39,6 +39,8 @@ public class Enemy : MonoBehaviour
     //[SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer renderer;
 
+    [SerializeField] ParticleSystem DeathExplosio;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -246,6 +248,8 @@ public class Enemy : MonoBehaviour
     public void GetHit(float damage)
     {
         Debug.Log("Enemy takes damage!");
+
+        //DeathExplosio.Play();
 
         health -= damage;
 

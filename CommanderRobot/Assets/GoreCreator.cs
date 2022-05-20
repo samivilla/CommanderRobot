@@ -20,6 +20,9 @@ public class GoreCreator : MonoBehaviour
     public GameObject LLeg;
     public GameObject RLeg;
     public GameObject Head;
+
+    [SerializeField] Collider2D collider;
+
     public void MakeGore(GoreOrigin origin, GameObject prefab)
     {
         GameObject gore = Instantiate(prefab);
@@ -70,5 +73,12 @@ public class GoreCreator : MonoBehaviour
     public void MakeHeadGore(GameObject prefab)
     {
         MakeGore(GoreOrigin.head, prefab);
+    }
+
+    public IEnumerator DisableCollider()
+    {
+        yield return new WaitForSeconds(GoreDuration);
+
+        collider.gameObject.SetActive(false);
     }
 }
