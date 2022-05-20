@@ -17,9 +17,9 @@ public class CommanderRobotGameController : MonoBehaviour
 
         PrepareGame();
 
-        StartCoroutine(IntroTextFade());
+        //StartCoroutine(IntroTextFade());
 
-        ShowPlayerCharacter();
+        //ShowPlayerCharacter();
     }
 
     private void PrepareGame()

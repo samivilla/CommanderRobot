@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private bool isDead;
     [SerializeField] private bool canAttack;
     [SerializeField] private bool onAttackReset;
+    [SerializeField] private bool foundAlly;
 
     [Header("Debugging")]
     [SerializeField] private Vector3 direction;
@@ -36,18 +37,20 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float attackDuration;
     [SerializeField] private Animator animator;
     //[SerializeField] private Rigidbody2D rb;
+    [SerializeField] private SpriteRenderer renderer;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         //rb = GetComponent<Rigidbody2D>();
+        renderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
     {
         if (!isHit && !isDead)
         {
-            //CheckForTarget();
+            CheckForTarget();
 
             if (target == null)
             {
@@ -70,7 +73,7 @@ public class Enemy : MonoBehaviour
 
     private void CheckForTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, enemyDetectionRadius, enemyMask);
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 10.22136f), enemyDetectionRadius, enemyMask);
 
         if(enemies.Length > 0)
         {
@@ -89,21 +92,48 @@ public class Enemy : MonoBehaviour
             target = null;
             canAttack = false;
             //animator.SetInteger("movingState", 0);
+
+            /*if (!isProtecting)
+            {
+                Collider2D[] cops = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 10.22136f), enemyDetectionRadius, LayerMask.GetMask("enemy"));
+
+                if (cops.Length > 0)
+                {
+                    for (int i = 0; i < cops.Length; i++)
+                    {
+                        if (cops[i].gameObject != gameObject)
+                        {
+                            foundAlly = true;
+                            return;
+                        }
+
+                        else
+                        {
+                            foundAlly = false;
+                        }
+                    }
+                }
+            }*/
         }
     }
 
     private IEnumerator Patrol()
     {
-        direction = new Vector2(transform.position.x + Random.Range(-patrolingDistance, patrolingDistance), transform.position.y + Random.Range(-patrolingDistance, patrolingDistance));
+        direction = new Vector3(transform.position.x + Random.Range(-patrolingDistance, patrolingDistance), transform.position.y + Random.Range(-patrolingDistance, patrolingDistance));
 
         if(direction.y > 22.4f)
         {
-            direction = new Vector2(direction.x, 22.4f);
+            direction = new Vector3(direction.x, 22.4f);
         }
 
         else if(direction.y < -25f)
         {
-            direction = new Vector2(direction.x, -25f);
+            direction = new Vector3(direction.x, -25f);
+        }
+
+        if(direction.x > 250f)
+        {
+            direction = new Vector3(250f, direction.y);
         }
 
         if(direction.x > transform.position.x)
@@ -121,12 +151,14 @@ public class Enemy : MonoBehaviour
 
         while (!isProtecting && target == null && !isHit)
         {
-            transform.position = Vector2.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
 
             Debug.Log("move");
             //rb.velocity = direction * moveSpeed;
 
-            if (Vector2.Distance(transform.position, direction) < 2f)
+            renderer.sortingOrder = (int)transform.position.y;
+
+            if (Vector2.Distance(transform.position, direction) < 2f/* || foundAlly*/)
             {
                 StartCoroutine(ProtectPosition());
             }
@@ -139,10 +171,40 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator ProtectPosition()
     {
-        Debug.Log("protecting");
         isProtecting = true;
+
+        /*if (foundAlly)
+        {
+            foundAlly = false;
+
+            Collider2D ally = Physics2D.OverlapCircle(transform.position, enemyDetectionRadius, LayerMask.GetMask("enemy"));
+
+            Vector3 newDirection = new Vector3(-ally.transform.position.x, -ally.transform.position.y);
+
+            if (newDirection.x > transform.position.x)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+
+            else
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
+
+            float moveTime = 0.5f;
+            
+            while (moveTime > 0f)
+            {
+                Debug.Log("move away");
+                transform.position = Vector3.MoveTowards(transform.position, newDirection, moveSpeed * Time.deltaTime);
+                moveTime -= 0.01f;
+
+                yield return new WaitForSeconds(0.01f);
+            }
+        }*/
+
         animator.SetInteger("movingState", 0);
-        yield return new WaitForSeconds(protectingTime + Random.Range(-0.5f, 0.5f));
+        yield return new WaitForSeconds(protectingTime + Random.Range(-1.5f, 1.5f));
         isProtecting = false;
     }
 
@@ -158,6 +220,7 @@ public class Enemy : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
+        Debug.Log("attacked");
         target.GetComponent<fighterScript>().TakeDamage(damage);
         animator.SetInteger("movingState", 4);
         animator.SetInteger("fightState", 1);

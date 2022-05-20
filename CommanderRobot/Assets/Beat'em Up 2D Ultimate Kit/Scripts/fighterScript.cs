@@ -145,6 +145,8 @@ public class fighterScript : MonoBehaviour {
 
 	public void move (float x, float y) // move function
 	{
+		sr.sortingOrder = (int)transform.position.y;
+
 		if (!demobilized && !dead && !isBlocking) { // checks if fighter is alive, not demobilized and not blocking
 			rb.velocity = new Vector2 (x, rb.velocity.y / speed) * speed; // applies horizontal movement
 			if (grounded) { // checks if fighter is grounded
