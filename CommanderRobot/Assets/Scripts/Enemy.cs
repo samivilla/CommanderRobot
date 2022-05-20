@@ -52,24 +52,23 @@ public class Enemy : MonoBehaviour
     {
         if (!isHit && !isDead)
         {
-            CheckForTarget();
+            //CheckForTarget();
 
             if (target == null)
             {
                 if (!isPatroling && !isProtecting)
                 {
-                    Debug.Log("start patroling");
                     StartCoroutine(Patrol());
                 }
             }
 
-            else
+            /*else
             {
                 if (canAttack && !onAttackReset)
                 {
                     StartCoroutine(Attack());
                 }
-            }
+            }*/
         }
     }
 
