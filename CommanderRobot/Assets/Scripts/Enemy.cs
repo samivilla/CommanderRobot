@@ -263,7 +263,7 @@ public class Enemy : MonoBehaviour
         }
 
         Debug.Log("attacked");
-        target.GetComponent<fighterScript>().TakeDamage(damage);
+        //target.GetComponent<fighterScript>().TakeDamage(damage);
         animator.SetInteger("movingState", 4);
         animator.SetInteger("fightState", 1);
 
