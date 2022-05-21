@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float enemyDetectionRadius;
     [SerializeField] private float attackRadius;
     [SerializeField] private float moveToEnemySpeed;
+    [SerializeField] private float moveAnimationSpeed = 1;
     [SerializeField] private LayerMask enemyMask;
 
     [Header("Patroling")]
@@ -233,6 +234,9 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator MoveTowardsEnemy()
     {
+        animator.SetInteger("movingState", 1);
+        animator.SetFloat("moveSpeed", moveAnimationSpeed);
+
         while (!canAttack)
         {
             transform.position = Vector3.MoveTowards(transform.position, player.transform.position, moveToEnemySpeed * Time.deltaTime);
