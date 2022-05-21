@@ -10,6 +10,8 @@ public class Enemy : MonoBehaviour
     
     [Header("Enemy Detection")]
     [SerializeField] private float enemyDetectionRadius;
+    [SerializeField] private float attackRadius;
+    [SerializeField] private float moveToEnemySpeed;
     [SerializeField] private LayerMask enemyMask;
 
     [Header("Patroling")]
@@ -28,7 +30,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] private bool isDead;
     [SerializeField] private bool canAttack;
     [SerializeField] private bool onAttackReset;
-    [SerializeField] private bool foundAlly;
+    //[SerializeField] private bool foundAlly;
+    [SerializeField] private bool foundEnemy;
+    [SerializeField] private bool moveTowardsEnemy;
 
     [Header("Debugging")]
     [SerializeField] private Vector3 direction;
@@ -38,6 +42,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Animator animator;
     //[SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer renderer;
+    [SerializeField] private GameObject player;
 
     [SerializeField] ParticleSystem DeathExplosio;
 
@@ -46,13 +51,14 @@ public class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         //rb = GetComponent<Rigidbody2D>();
         renderer = GetComponent<SpriteRenderer>();
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     private void Update()
     {
         if (!isHit && !isDead)
         {
-            //CheckForTarget();
+            CheckForTarget();
 
             if (target == null)
             {
@@ -62,19 +68,37 @@ public class Enemy : MonoBehaviour
                 }
             }
 
-            /*else
+            else
             {
                 if (canAttack && !onAttackReset)
                 {
                     StartCoroutine(Attack());
                 }
-            }*/
+
+                else if (!moveTowardsEnemy)
+                {
+                    moveTowardsEnemy = true;
+                    StartCoroutine(MoveTowardsEnemy());
+                }
+            }
         }
     }
 
     private void CheckForTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 10.22136f), enemyDetectionRadius, enemyMask);
+        if (Vector2.Distance(transform.position, player.transform.position) < enemyDetectionRadius)
+        {
+            target = player;
+            foundEnemy = true;
+        }
+
+        else
+        {
+            target = null;
+            foundEnemy = false;
+        }
+
+        /*Collider2D[] enemies = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 10.22136f), enemyDetectionRadius, enemyMask);
 
         if(enemies.Length > 0)
         {
@@ -83,7 +107,7 @@ public class Enemy : MonoBehaviour
                 if (enemies[i].CompareTag("Player"))
                 {
                     target = enemies[i].gameObject;
-                    canAttack = true;
+                    foundEnemy = true;
                 }
             }
         }
@@ -91,10 +115,10 @@ public class Enemy : MonoBehaviour
         else
         {
             target = null;
-            canAttack = false;
+            foundEnemy = false;
             //animator.SetInteger("movingState", 0);
 
-            /*if (!isProtecting)
+            if (!isProtecting)
             {
                 Collider2D[] cops = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 10.22136f), enemyDetectionRadius, LayerMask.GetMask("enemy"));
 
@@ -115,7 +139,6 @@ public class Enemy : MonoBehaviour
                     }
                 }
             }*/
-        }
     }
 
     private IEnumerator Patrol()
@@ -150,11 +173,10 @@ public class Enemy : MonoBehaviour
         isPatroling = true;
         animator.SetInteger("movingState", 1);
 
-        while (!isProtecting && target == null && !isHit)
+        while (!isProtecting && target == null && !isHit && !foundEnemy)
         {
             transform.position = Vector3.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
 
-            Debug.Log("move");
             //rb.velocity = direction * moveSpeed;
 
             renderer.sortingOrder = (int)transform.position.y;
@@ -207,6 +229,21 @@ public class Enemy : MonoBehaviour
         animator.SetInteger("movingState", 0);
         yield return new WaitForSeconds(protectingTime + Random.Range(-1.5f, 1.5f));
         isProtecting = false;
+    }
+
+    private IEnumerator MoveTowardsEnemy()
+    {
+        while (!canAttack)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, moveToEnemySpeed * Time.deltaTime);
+
+            if(Vector2.Distance(transform.position, player.transform.position) < attackRadius)
+            {
+                canAttack = true;
+            }
+
+            yield return new WaitForSeconds(patrolUpdateTime);
+        }
     }
 
     private IEnumerator Attack()
